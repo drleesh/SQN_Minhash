@@ -118,10 +118,11 @@ def input_extractMinhash(ShingleDict_input, DLowestShingleID_input):
 	return DLowestShingleID_input[doc]
 
 
-def Matching(dataLowestShingleID, docLowestShingleID):
+def Matching(dataLowestShingleID, docLowestShingleID, filename):
 	estimateMatrix = []
 	totaljaccard = []
 	values = docLowestShingleID.values()
+
 	for x in range(0, len(values)):
 		doc_values = values[x]
 		# print doc_values
@@ -142,6 +143,8 @@ def Matching(dataLowestShingleID, docLowestShingleID):
 		estimateMatrix.append(col)
 		# print estimateMatrix
 		# print totaljaccard
+	FinalScore = Scoring(totaljaccard)
+	print filename.replace('InputDataFolder/', '') + ' is suspected to be ' + str(FinalScore) + '% of the infection.'
 	return totaljaccard
 
 
@@ -153,15 +156,24 @@ def Scoring(totaljaccard):
 
 
 def Load_file():
+	global docLowestShingleID, dataLowestShingleID, randomNoA, randomNoB
 	currentfilePath = os.path.realpath(__file__)
 	dirPath = currentfilePath.split("/")
 	dirPath[-1] = "InputDataFolder/"
 	dirPath = "/".join(dirPath)
 	folder = os.listdir(dirPath)
 
+	randomNoA = findRandomNos(200)
+	randomNoB = findRandomNos(200)
+
 	for file in folder:
 		print folder
-		InputDataMinhash("InputDataFolder/{}".format(file))
+		filename = InputDataMinhash("InputDataFolder/{}".format(file))
+
+		docLowestShingleID = extractMinhash(docShingleDict, docLowestShingleID)
+		dataLowestShingleID = input_extractMinhash(dataShingleDict, dataLowestShingleID)
+
+		Matching(dataLowestShingleID,docLowestShingleID, filename)
 
 
 
@@ -171,17 +183,16 @@ if __name__ == '__main__' :
 
 	Load_file()
 
-	randomNoA = findRandomNos(200)
-	randomNoB = findRandomNos(200)
+	# randomNoA = findRandomNos(200)
+	# randomNoB = findRandomNos(200)
 
-	docLowestShingleID = extractMinhash(docShingleDict, docLowestShingleID)
-	dataLowestShingleID = input_extractMinhash(dataShingleDict, dataLowestShingleID)
+	# docLowestShingleID = extractMinhash(docShingleDict, docLowestShingleID)
+	# dataLowestShingleID = input_extractMinhash(dataShingleDict, dataLowestShingleID)
 
 	# print docLowestShingleID
 	# print dataLowestShingleID
 
-	result = Matching(dataLowestShingleID,docLowestShingleID)
+	# Matching(dataLowestShingleID,docLowestShingleID)
 	# print result
 
-	FinalScore = Scoring(result)
-	print InputData + ' is suspected to be ' + str(FinalScore) + '% of the infection.'
+	
